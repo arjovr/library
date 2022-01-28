@@ -3,15 +3,19 @@ const newBookModal = document.querySelector('#newBoookModal');
 const closeBtn = document.querySelector('.close-modal');
 const cancelBtn = document.querySelector('button.cancel_btn');
 const saveBtn = document.querySelector('button.save_btn');
-
+const form = document.querySelector('form');
 
 const uid = function () {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
 
-saveBtn.addEventListener('click', () => {
-    getBookFromPage();
+saveBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if(!getBookFromPage()) {
+        return false;
+    }
+    e.preventDefault();
     newBookModal.style.display = 'none';
     displayAll();
 });
@@ -74,15 +78,27 @@ function fillPageWithBook(book) {
 
 function getBookFromPage() {
     const title = document.querySelector('#form_title');
+    const author = document.querySelector('#form_author');
+    const pages = document.querySelector('#form_pages');
+    if (!title.checkValidity()) {
+        return false;
+    }
+    if (!author.checkValidity()) {
+        return false;
+    }
+    if (!pages.checkValidity()) {
+        return false;
+    }
     const book = new Book(
         title.value,
-        document.querySelector('#form_author').value,
-        document.querySelector('#form_pages').value,
+        author.value,
+        pages.value,
         document.querySelector('#form_read').checked || false,
     );
     book.id = title.dataset.id;
 
     saveBook(book);
+    return true;
 }
 
 myLibrary = [
